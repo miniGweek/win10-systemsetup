@@ -1,4 +1,5 @@
-﻿choco install -y `
+﻿# First install the absolute required apps - for dev workstation
+choco install -y `
     powershell-core `
     microsoft-windows-terminal `
     vscode `
@@ -8,20 +9,33 @@
     Brave `
     Vivaldi `
     7zip `
-    teamviewer `
-    chrome-remote-desktop-chrome `
-    chrome-remote-desktop-host `
     git `
     microsoft-teams `
     gitkraken `
-    WinMerge `
     python `
     azure-cli `
     azurepowershell `
-    WinRAR `
-    spotify `
+    beyondcompare2 `
+    beyondcompare-integration `
+    beyondcompare `
     snagit `
     IrfanView `
+    internet-download-manager `
+    lastpass `
+    dotnetfx `
+    Everything `
+    WinMerge `
+    docker-desktop `
+    golang `
+    nodejs `
+    teamviewer `
+    chrome-remote-desktop-chrome `
+    chrome-remote-desktop-host
+
+# Begin install of 2ndary apps
+choco install -y `
+    WinRAR `
+    spotify `
     LINE `
     Whatsapp `
     telegram `
@@ -30,11 +44,7 @@
     AdoptOpenJDK15JRE `
     coretemp `
     discord `
-    dotnetfx `
-    Everything `
     f.lux `
-    internet-download-manager `
-    lastpass `
     nordvpn `
     qbittorrent `
     signal `
@@ -57,11 +67,5 @@
     Shotcut `
     Slack `
     Uplay `
-    Zoom `
-    beyondcompare2 `
-    beyondcompare-integration `
-    beyondcompare `
-    docker-desktop `
-    golang `
-    nodejs `    
+    Zoom  `
     teracopy

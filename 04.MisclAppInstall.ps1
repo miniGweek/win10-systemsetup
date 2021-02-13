@@ -5,7 +5,6 @@ function DownloadFile($url) {
     Invoke-WebRequest $url -OutFile $installerName[-1]
     return $installerName[-1];
 }
-
 function InstallMSI($fileName) {
     $DataStamp = Get-Date -Format ddMMyyyyTHHmmss
     $InstallLogFile = '{0}-{1}.log' -f $fileName, $DataStamp
@@ -42,9 +41,11 @@ function DownloadFromGithubReleasePage($releasePageUrl, $setupFilePatternName) {
     return $LatestReleaseFileName
 }
 
+# Install posh-git and oh-my-posh
 Install-Module posh-git -Force
 Install-Module oh-my-posh -Force
 
+# Install Az Powershell Model
 if ($PSVersionTable.PSEdition -eq 'Desktop' -and (Get-Module -Name AzureRM -ListAvailable)) {
     Write-Warning -Message ('Az module not installed. Having both the AzureRM and ' +
         'Az modules installed at the same time is not supported.')
@@ -67,11 +68,9 @@ if (Test-Path -Path $FolderName) {
 }
 Expand-Archive $FileName
 
-
 $Destination = (New-Object -ComObject Shell.Application).Namespace(0x14)
 $SourceDir = ".\$FolderName\"
 
-# Create the source directory if it doesn't already exist
 $TempFolder = "~/Downloads/TempFonts"
 if (Test-Path -Path "TempFonts") {
     Remove-Item "TempFonts" -Recurse -Force
@@ -110,9 +109,6 @@ Invoke-Expression $SilentInstallCmd
 # $FileName = DownloadFromGithubReleasePage https://github.com/alacritty/alacritty/releases *Alacritty*.msi
 # InstallMSI $FileName
 
-# cd ~/Downloads
-# DownloadFile https://github.com/microsoft/cascadia-code/releases/download/v2009.22/CascadiaCode-2009.22.zip
-
 # Install Steam client
 $SteamSetupUrl = "https://cdn.akamai.steamstatic.com/client/installer/SteamSetup.exe"
 $SteamSetupFileName = $SteamSetupUrl -Split "/" | Select -Last 1
@@ -125,7 +121,6 @@ $SilentInstallCmd = "& .\$SteamSetupFileName /S"
 Invoke-Expression $SilentInstallCmd
 
 # Install Surfshark vpn
-
 cd ~/Downloads
 DownloadFile "https://downloads.surfshark.com/windows/latest/SurfsharkSetup.exe";
 ./SurfsharkSetup.exe
