@@ -100,6 +100,7 @@ Get-ChildItem -Path $SourceDir -Include 'CascadiaCodePL*.otf' -Recurse | ForEach
     
 }
 
+# Test
 # Install Windows Power Toys
 $FileName = DownloadFromGithubReleasePage https://github.com/microsoft/PowerToys/releases *PowerToysSetup*
 $SilentInstallCmd = "& .\$FileName --silent"
