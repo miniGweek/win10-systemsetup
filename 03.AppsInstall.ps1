@@ -55,7 +55,6 @@ choco install -y `
     AzureStorageExplorer `
     winrar `
     Audacity `
-    Battle.net `
     CrystalDiskInfo `
     CrystalDiskMark `
     HWiNFO `

@@ -121,6 +121,10 @@ Invoke-WebRequest -Uri $SteamSetupUrl -OutFile $SteamSetupFileName
 $SilentInstallCmd = "& .\$SteamSetupFileName /S"
 Invoke-Expression $SilentInstallCmd
 
+# Installe Battle.net
+CD ~/Downloads
+Invoke-WebRequest -Uri "https://us.battle.net/download/getInstaller?os=win&installer=Battle.net-Setup.exe" -OutFile Battle.net-Setup.exe
+./Battle.net-Setup.exe
 # Install Surfshark vpn
 cd ~/Downloads
 DownloadFile "https://downloads.surfshark.com/windows/latest/SurfsharkSetup.exe";
