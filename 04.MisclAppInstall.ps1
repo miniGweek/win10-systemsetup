@@ -54,6 +54,16 @@ else {
     Install-Module -Name Az -AllowClobber -Scope CurrentUser -Force
 }
 
+#Install CPU Z
+$cpuZContent = Invoke-WebRequest -Uri https://www.cpuid.com/softwares/cpu-z.html
+$taichiSetupPageLink = $cpuZContent.Links | ? { $_.href -like "*taichi*exe*" } | select href -First 1
+$latestTaichiSetupContent = Invoke-WebRequest -Uri $taichiSetupPageLink.href
+$latestTaichiSetupUri = ($latestTaichiSetupContent.Links | ? { $_.href -like "*taichi-en.exe*" } | Select href -First 1).href;
+cd ~/Downloads
+$cpuzTaichiInstallerName = DownloadFile $latestTaichiSetupUri
+Invoke-Expression "./$cpuzTaichiInstallerName /VERYSILENT /NORESTART"
+
+
 #Install CDIsplayEx
 cd ~/Downloads
 Invoke-WebRequest -Uri https://www.cdisplayex.com/findit.php -Method POST -OutFile CDisplay.exe
