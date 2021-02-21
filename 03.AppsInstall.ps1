@@ -34,6 +34,7 @@ choco install -y `
 
 # Begin install of 2ndary apps
 choco install -y `
+    treesizefree `
     WinRAR `
     spotify `
     LINE `
