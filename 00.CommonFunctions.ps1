@@ -10,7 +10,7 @@ Function Invoke-DownloadByTraversingManyPages($startUrl, $patterns , [string]$fi
         if ($null -eq $downloadedFileName) {
             foreach ($p in $arrayOfPatterns) {
                 Write-Host "+++++ Visiting $($url[-1])"
-                $page = Invoke-WebRequest -Uri $url[-1] #Always use the last url
+                $page = Invoke-WebRequest -Uri $url[-1] -UseBasicParsing #Always use the last url
                 Write-Host "+++++ Searching links with pattern $p"
                 $link = $page.Links | Where-Object { $_.href -like $p } | Select -First 1
                 Write-Host "+++++ Matched href $($link.href)"
@@ -52,18 +52,25 @@ function DownloadFile($url, [string]$fileName) {
     curl $url -Lo $fileName
     return $fileName;
 }
-function InstallMSI($fileName) {
+function InstallMSI {
+    param(
+        [Parameter(Mandatory = $true)][string]$FileName,
+        [string]$Arguments
+    )
+    Write-Host "+++++ Begin install of $FileName"
     $DataStamp = Get-Date -Format ddMMyyyyTHHmmss
     $InstallLogFile = '{0}-{1}.log' -f $fileName, $DataStamp
     $MSIArguments = @(
         "/i"
         ('"{0}"' -f $fileName)
         "/qn"
+        $Arguments
         "/norestart"
         "/L*v"
         $InstallLogFile
     )
     Start-Process "msiexec.exe" -ArgumentList $MSIArguments -Wait -NoNewWindow 
+    Write-Host "+++++ End install of $FileName"
 }
 
 
@@ -81,11 +88,16 @@ function DownloadAndInstall($url) {
     InstallMSI $installerName
 }
 
-function DownloadFromGithubReleasePage($releasePageUrl, $setupFilePatternName) {
-    $Releases = Invoke-WebRequest -Uri $releasePageUrl
-    $LatestReleaseUrl = $Releases.Links | Where-Object { $_.href -like $setupFilePatternName } | Select href -First 1
+function DownloadFromGithubReleasePage {
+    param(
+        [Parameter(Mandatory = $true)][string]$ReleasePageUrl,
+        [Parameter(Mandatory = $true)][string]$SetupFilePatternName,
+        [string]$ExcludePattern)
+
+    $Releases = Invoke-WebRequest -Uri $ReleasePageUrl -UseBasicParsing
+    $LatestReleaseUrl = $Releases.Links | Where-Object { $_.href -like $SetupFilePatternName -and $_.href -notlike $ExcludePattern } | Select-Object href -First 1
     Write-Host ++++++++++ LatestReleaseUrl = $LatestReleaseUrl
-    $LatestReleaseFileName = $LatestReleaseUrl.href -Split "/" | Select -Last 1
+    $LatestReleaseFileName = $LatestReleaseUrl.href -Split "/" | Select-Object -Last 1
     Write-Host ++++++++++ LatestReleaseFileName = $LatestReleaseFileName
     $LatestReleaseDownloadUrl = "https://github.com$($LatestReleaseUrl.href)"
     Write-Host ++++++++++ LatestReleaseDownloadUrl = $LatestReleaseDownloadUrl
@@ -94,7 +106,7 @@ function DownloadFromGithubReleasePage($releasePageUrl, $setupFilePatternName) {
         Write-Host ++++++++++ Removing existing file with same name - $LatestReleaseFileName
     }
     Write-Host ++++++++++ Downloading $LatestReleaseFileName
-    Invoke-WebRequest -Uri $LatestReleaseDownloadUrl -OutFile $LatestReleaseFileName
+    Invoke-WebRequest -Uri $LatestReleaseDownloadUrl -OutFile $LatestReleaseFileName -UseBasicParsing
     return $LatestReleaseFileName
 }
 
