@@ -145,3 +145,10 @@ Function Invoke-InstallFonts($FolderPath, $FontsPatternToInstall) {
     
     }
 }
+
+function Remove-Installer($Pattern) {
+    if (Test-Path -Path $Pattern) {
+        Write-Output "Removing existing installer with file pattern $Pattern"
+        Remove-Item $Pattern
+    }
+}
