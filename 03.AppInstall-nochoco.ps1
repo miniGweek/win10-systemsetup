@@ -1,4 +1,5 @@
 # vscode
+
 Invoke-WebRequest -uri "https://code.visualstudio.com/sha/download?build=stable&os=win32-x64-user" -OutFile vscodeusersetup.exe
 SilentInstallExe vscodeusersetup.exe
 
@@ -18,7 +19,7 @@ Invoke-WebRequest -Uri "https://dl.google.com/tag/s/appguid%3D%7B8A69D345-D564-4
 .\ChromeSetup.exe /INSTALL
 
 # Firefox browser
-Invoke-WebRequest -Uri "https://download.mozilla.org/?product=firefox-latest-ssl&os=win64&lang=en-US" -OutFile FireFoxSetup.exe
+curl -Uri "https://download.mozilla.org/?product=firefox-latest-ssl&os=win64&lang=en-US" -OutFile FireFoxSetup.exe
 .\FireFoxSetup.exe -ms
 
 # Brave browser
@@ -116,3 +117,14 @@ InstallMSI $installerName
 # NodeJs
 $installerName = Invoke-DownloadByTraversingManyPages  "https://nodejs.org/en/download/" "*x64.msi"
 InstallMSI $installerName
+
+$Path = "C:\Temp\Downloads"
+$SSMSUrl = "https://download.microsoft.com/download/3/f/d/3fd533f5-fdfc-407d-98a6-d5deb214d13b/SSMS-Setup-ENU.exe"
+if ((Test-Path $Path) -ne $True) {
+    New-Item -ItemType Directory $Path
+    Write-Output "$Path wasn't present, created now"
+}
+Write-Output "Download SSMS...."
+Invoke-WebRequest -uri $SSMSUrl -OutFile "$Path\SSMS-Setup-ENU.exe" -UseBasicParsing
+Set-Location $Path
+.\SSMS-Setup-ENU.exe /install /quiet /norestart

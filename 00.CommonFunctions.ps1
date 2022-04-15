@@ -1,29 +1,31 @@
 
-Function Invoke-DownloadByTraversingManyPages($startUrl, $patterns) {
-    $arrayOfPatterns = $patterns.Split(",");
-    $url = @($startUrl)
-    $uriObject = [System.Uri]$startUrl;
-    $uriHost = $uriObject.Host;
-    
-    $downloadedFileName = DownloadFileIfUrlEndsWithExeOrMSI $startUrl
-    if ($null -eq $downloadedFileName) {
-        foreach ($p in $arrayOfPatterns) {
-            Write-Host "+++++ Visiting $($url[-1])"
-            $page = Invoke-WebRequest -Uri $url[-1] #Always use the last url
-            Write-Host "+++++ Searching links with pattern $p"
-            $link = $page.Links | Where-Object { $_.href -like $p } | Select -First 1
-            Write-Host "+++++ Matched href $($link.href)"
-            $newUrl = Get-AbsoluteUrl $uriHost $link.href
-            $url += $newUrl
-            Write-Host "+++++ Link matched $newUrl"
+Function Invoke-DownloadByTraversingManyPages($startUrl, $patterns , [string]$fileName, [bool]$direct = $false) {
+    Write-Host "+++++ Entering Download code, params are $startUrl - $fileName - $direct "
+    $downloadedFileName = DownloadFileIfUrlEndsWithExeOrMSI $startUrl $fileName $direct
+    if ($patterns -ne $null -and $patterns.Length -gt 0) {
+        $arrayOfPatterns = $patterns.Split(",");
+        $url = @($startUrl)
+        $uriObject = [System.Uri]$startUrl;
+        $uriHost = $uriObject.Host;
+        if ($null -eq $downloadedFileName) {
+            foreach ($p in $arrayOfPatterns) {
+                Write-Host "+++++ Visiting $($url[-1])"
+                $page = Invoke-WebRequest -Uri $url[-1] #Always use the last url
+                Write-Host "+++++ Searching links with pattern $p"
+                $link = $page.Links | Where-Object { $_.href -like $p } | Select -First 1
+                Write-Host "+++++ Matched href $($link.href)"
+                $newUrl = Get-AbsoluteUrl $uriHost $link.href
+                $url += $newUrl
+                Write-Host "+++++ Link matched $newUrl"
+            }
+            $downloadedFileName = DownloadFileIfUrlEndsWithExeOrMSI $url[-1] $fileName
         }
-        $downloadedFileName = DownloadFileIfUrlEndsWithExeOrMSI $url[-1]
     }
     return $downloadedFileName
 }
 
-Function DownloadFileIfUrlEndsWithExeOrMSI($url) {
-    if ($url.EndsWith(".exe") -or $url.EndsWith(".msi")) {
+Function DownloadFileIfUrlEndsWithExeOrMSI($url, [string]$fileName, [bool]$direct = $false) {
+    if (($url.EndsWith(".exe") -or $url.EndsWith(".msi")) -or $direct -eq $true) {
         Write-Host "+++++ Download link found - $url .Initiating download."
         $fileName = DownloadFile $url $fileName
         return $fileName
@@ -37,14 +39,18 @@ Function Get-AbsoluteUrl($uriHost, $uri) {
     }
     return $uri
 }
-function DownloadFile($url) {
+function DownloadFile($url, [string]$fileName) {
     $installerLink = $url
-    $installerName = $installerLink -Split "/"
-    if ($installerName[-1].IndexOf("=") -gt 0) {
-        $installerName = $installerName[-1].Split("=");
+    if ($fileName -eq $null -or $fileName -eq "") {
+        $installerName = $installerLink -Split "/"
+        if ($installerName[-1].IndexOf("=") -gt 0) {
+            $installerName = $installerName[-1].Split("=");
+        }
+        $fileName = $installerName[-1]
     }
-    curl $url -Lo $installerName[-1]
-    return $installerName[-1];
+    Write-Host "+++++ Downloading File  $fileName from link $url "
+    curl $url -Lo $fileName
+    return $fileName;
 }
 function InstallMSI($fileName) {
     $DataStamp = Get-Date -Format ddMMyyyyTHHmmss

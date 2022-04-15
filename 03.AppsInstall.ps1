@@ -1,8 +1,10 @@
 ﻿# First install the absolute required apps - for dev workstation
 choco install -y `
     powershell-core `
+    powershell-preview `
     microsoft-windows-terminal `
     vscode `
+    vscode-insiders `
     notepadplusplus `
     GoogleChrome `
     Firefox `
@@ -21,7 +23,8 @@ choco install -y `
     snagit `
     IrfanView `
     internet-download-manager `
-    lastpass `
+    bitwarden `
+    bitwarden-cli `
     dotnetfx `
     Everything `
     WinMerge `
