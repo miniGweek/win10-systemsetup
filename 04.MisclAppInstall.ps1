@@ -16,7 +16,7 @@ Set-PSReadLineOption -PredictionViewStyle ListView
 
 # Install Cascadia Code PL Fonts
 $FileName = DownloadFromGithubReleasePage https://github.com/microsoft/cascadia-code/releases/ *CascadiaCode-*
-$FolderName = $FileName -Split ".zip" | Select -First 1
+$FolderName = $FileName -Split ".zip" | Select-Object -First 1
 if (Test-Path -Path $FolderName) {
     Remove-Item $FolderName -Recurse -Force
 }
