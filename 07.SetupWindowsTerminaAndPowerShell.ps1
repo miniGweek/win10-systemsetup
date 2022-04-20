@@ -3,21 +3,36 @@ $CurrentScriptDir = Split-Path $CurrentScriptPath -Parent
 Write-Output "Current Script Directory is $CurrentScriptDir"
 . "$CurrentScriptDir\00.CommonFunctions.ps1"
 
+Start-Transcript -Path "~/Downloads/$($MyInvocation.MyCommand.Name).txt" -NoClobber
+
 Set-Location ~/Downloads
-Remove-File "PowerShell*-win-x64.msi"
-Write-Log -Message "Downloading the latest version of PowerShellCore"
 
-$PowerShellInstaller = DownloadFromGithubReleasePage -ReleasePageUrl "https://github.com/PowerShell/PowerShell/releases" -SetupFilePatternName "*-win-x64.msi*" -ExcludePattern "*preview*"
-InstallMSI -FileName $PowerShellInstaller -Arguments "ADD_EXPLORER_CONTEXT_MENU_OPENPOWERSHELL=1 ENABLE_PSREMOTING=0 REGISTER_MANIFEST=1 USE_MU=1 ENABLE_MU=1"
+# Install Chocolatey if it isn't installed 
+Write-Log -Message "Install Chocolatey package manager if it's not installed"
+$ChildScriptPath = "$CurrentScriptDir\08.InstallChocolatey.ps1"
+Start-Process "powershell.exe" -ArgumentList "-c $ChildScriptPath -ParentScriptDir $CurrentScriptDir" -Wait
 
-Write-Log -Message "Downloading latest stable release of Microsoft Windows Terminal"
-Remove-File "*Microsoft.WindowsTerminal_Win10_*.msixbundle*"
-$WindowsTerminalInstaller = DownloadFromGithubReleasePage -ReleasePageUrl https://github.com/microsoft/terminal/releases -SetupFilePatternName "*Microsoft.WindowsTerminal_Win10_*.msixbundle*" -ExcludePattern "*Microsoft.WindowsTerminalPreview_*"
-Add-AppxPackage $WindowsTerminalInstaller
+Write-Log -Message "Install PowerShellCore if it's not installed"
+$ChildScriptPath = "$CurrentScriptDir\09.InstallPoweShellCore.ps1"
+Start-Process "powershell.exe" -ArgumentList "-c $ChildScriptPath -ParentScriptDir $CurrentScriptDir" -Wait
+
+Write-Log -Message "Install WindowsTerminal"
+$ChildScriptPath = "$CurrentScriptDir\10.InstallWindowsTerminal.ps1"
+Start-Process "powershell.exe" -ArgumentList "-c $ChildScriptPath -ParentScriptDir $CurrentScriptDir" -Wait
 
 $PowerShellInstallFolder = "C:\Program Files\PowerShell"
-$PowerShellRelativePath = Get-ChildItem -Path $PowerShellInstallFolder -Recurse -Name "pwsh.exe" | Where-Object { $_ -notlike "*preview*" }
-$PowerShellExePath = Join-Path -Path $PowerShellInstallFolder -ChildPath $PowerShellRelativePath
+$PowerShellExePath = Get-ExePath -RootSearchDirectory $PowerShellInstallFolder `
+    -ExeName "pwsh.exe" `
+    -Exclude "*preview*" `
+    -Recurse
 
-$ChildScriptPath = "$CurrentScriptDir\08.SetupThemes.ps1"
-Start-Process $PowerShellExePath -ArgumentList "-c $ChildScriptPath -ParentScriptDir $CurrentScriptDir"
+$ChildScriptPath = "$CurrentScriptDir\11.InstallFonts.ps1"
+Start-Process $PowerShellExePath -ArgumentList "-c $ChildScriptPath -ParentScriptDir $CurrentScriptDir" -Wait
+
+$ChildScriptPath = "$CurrentScriptDir\12.InstallOhMyPoshAndGit.ps1"
+Start-Process $PowerShellExePath -ArgumentList "-c $ChildScriptPath -ParentScriptDir $CurrentScriptDir" -Wait
+
+$ChildScriptPath = "$CurrentScriptDir\13.UpdateWindowsTerminalSettings.ps1"
+Start-Process $PowerShellExePath -ArgumentList "-c $ChildScriptPath -ParentScriptDir $CurrentScriptDir" -Wait
+
+Stop-Transcript 

@@ -34,6 +34,7 @@ Function Get-File {
     Write-Log -Message "Begin download from url $Uri and save as file $OutFilePath"
     $WebClient.Downloadfile($Uri, $OutFilePath)
     Write-Log -Message "Download done"
+    return $OutFilePath
 }
 Function Invoke-DownloadByTraversingManyPages($startUrl, $patterns , [string]$fileName, [bool]$direct = $false) {
     Write-Log -Message "Entering Download code, params are $startUrl - $fileName - $direct"
@@ -46,7 +47,7 @@ Function Invoke-DownloadByTraversingManyPages($startUrl, $patterns , [string]$fi
         if ($null -eq $downloadedFileName) {
             foreach ($p in $arrayOfPatterns) {
                 Write-Log -Message "Visiting $($url[-1])"
-                $page = Get-File -Uri $url[-1] -UseBasicParsing #Always use the last url
+                $page = Invoke-WebRequest -Uri $url[-1] -UseBasicParsing #Always use the last url
                 Write-Log -Message "Searching links with pattern $p"
                 $link = $page.Links | Where-Object { $_.href -like $p } | Select-Object -First 1
                 Write-Log -Message "Matched href $($link.href)"
@@ -142,7 +143,7 @@ function DownloadFromGithubReleasePage {
         Write-Log -Message "Removing existing file with same name - $LatestReleaseFileName"
     }
     Write-Log -Message "Downloading $LatestReleaseFileName"
-    Get-File -Uri $LatestReleaseDownloadUrl -OutFile $LatestReleaseFileName
+    Get-File -Uri $LatestReleaseDownloadUrl -OutFile $LatestReleaseFileName | Out-Null
     return $LatestReleaseFileName
 }
 
@@ -207,8 +208,11 @@ Function Add-EntryToProfile {
         $ProfileContent = Get-Content -Path  $PSProfilePath
     }
     else {
-        Write-Log -Message "$PSProfilePath doesn't exist. Creating necessary directory and file."
-        New-Item -Type Directory $PSProfileDirectory   | Out-Null 
+        Write-Log -Message "$PSProfilePath doesn't exist"
+        if ((Test-Path $PSProfileDirectory) -ne $true) {
+            Write-Log -Message "$PSProfileDirectory doesn't exist. Creating $PSProfileDirectory"
+            New-Item -Type Directory $PSProfileDirectory   | Out-Null 
+        }
     }
 
     if (($ProfileContent -Contains $Content) -eq $False) {
@@ -219,4 +223,30 @@ Function Add-EntryToProfile {
     else {
         Write-Log -Message "The $Profile script already contains $Content.Skipping"
     }
+}
+
+Function Get-ExePath {
+    param(
+        [Parameter(Mandatory = $true)][string]$RootSearchDirectory,
+        [Parameter(Mandatory = $true)][string]$ExeName,
+        [string]$Exclude,
+        [switch]$Recurse
+    )
+    
+    $ExeRelativePath = ""
+    if ($Recurse.IsPresent) {
+        $ExeRelativePath = Get-ChildItem -Path $RootSearchDirectory -Recurse -Name $ExeName
+    }
+    else {
+        $ExeRelativePath = Get-ChildItem -Path $RootSearchDirectory -Name $ExeName
+    }
+    if ($null -ne $Exclude -and "" -ne $Exclude -and $Exclude.Length -gt 0) {
+        $ExeRelativePath = $ExeRelativePath  | Where-Object { $_ -notlike $Exclude }
+    }
+    if ($null -eq $ExeRelativePath -or $ExeRelativePath -eq "" -or ($ExeRelativePath.GetType().Name -eq "Object[]")) {
+        throw "More than 1 match found, quitting"
+    }
+   
+    $ExePath = Join-Path -Path $RootSearchDirectory -ChildPath $ExeRelativePath
+    return $ExePath
 }

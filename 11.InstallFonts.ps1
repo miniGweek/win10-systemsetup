@@ -1,22 +1,12 @@
 param([string]$ParentScriptDir)
+
+Start-Transcript -Path "~/Downloads/$($MyInvocation.MyCommand.Name).txt" -NoClobber
+
 # Will be installed using PowerShell Core
 Write-Output "Parent Script Directory is $ParentScriptDir"
 . "$ParentScriptDir\00.CommonFunctions.ps1"
 
 Set-Location ~/Downloads
-
-Write-Log -Message "Installing module posh-git"
-Install-Module posh-git -Force
-
-Write-Log -Message "Installing module oh-my-posh"
-Install-Module oh-my-posh -Force
-
-Write-Log -Message "Installing module PSReadLine"
-Install-Module -Name PSReadLine -Scope CurrentUser -Force -SkipPublisherCheck
-
-Add-EntryToProfile -Content "Import-Module posh-git"
-Add-EntryToProfile -Content "Import-Module oh-my-posh"
-Add-EntryToProfile -Content "Set-PSReadLineOption -PredictionViewStyle ListView"
 
 
 # Install Cascadia Code PL Fonts
@@ -52,3 +42,5 @@ $MesloNerdFontsLinks | `
     Get-File -Uri $_ -OutFile $downloadPath
 }
 Invoke-InstallFonts "MesloNerdFonts" "Meslo*.ttf"
+
+Stop-Transcript 
