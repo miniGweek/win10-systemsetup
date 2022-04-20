@@ -28,7 +28,7 @@ Install-Module -Name PSReadLine -Scope CurrentUser -Force -SkipPublisherCheck
 Add-EntryToProfile -Content "Import-Module posh-git"
 Add-EntryToProfile -Content "Import-Module oh-my-posh"
 Add-EntryToProfile -Content "Set-PSReadLineOption -PredictionViewStyle ListView"
-Add-EntryToProfile -Content "oh-my-posh --init --shell pwsh --config ~/jandedobbeleer.omp.json | Invoke-Expression"
+Add-EntryToProfile -Content "Set-PoshPrompt -Theme cloud-native-azure.omp"
 
 Write-Log -Message "Done adding entries to the PowerShell Core profile"
 # Launch PowerShell to pre-load the necessary modules

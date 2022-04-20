@@ -201,7 +201,10 @@ Function Add-EntryToProfile {
 
     Write-Log -Message "Beging adding $Content to PowerShell (core) profile"
     $PSProfileDirectory = "$env:USERPROFILE\Documents\PowerShell"
-    $PSProfilePath = "$PSProfileDirectory\Microsoft.PowerShell_profile.ps1"
+    $PSProfilePath = $Profile 
+    if ($null -eq $PSProfilePath -or "" -eq $PSProfilePath) {
+        $PSProfilePath = "$PSProfileDirectory\Microsoft.PowerShell_profile.ps1"
+    }
     $ProfileContent = ""
     if (Test-Path -Path $PSProfilePath) {
         Write-Log -Message "$PSProfilePath exists. "
@@ -217,7 +220,7 @@ Function Add-EntryToProfile {
 
     if (($ProfileContent -Contains $Content) -eq $False) {
         Write-Log -Message "$Profile doesn't contain the script $Content...Adding it..."
-        Add-Content $PSProfilePath $Content
+        Add-Content $PSProfilePath ([System.Environment]::NewLine + $Content)
         Write-Log -Message "Added $Content to Powershell profile"
     }
     else {
