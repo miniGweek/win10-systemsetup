@@ -1,6 +1,7 @@
 param([string]$ParentScriptDir)
 
-Start-Transcript -Path "~/Downloads/$($MyInvocation.MyCommand.Name).txt" -NoClobber
+$CurrentDateTimeStamp = Get-Date -Format "ddMMyyyy_hhmmss"
+Start-Transcript -Path "~/Downloads/$($MyInvocation.MyCommand.Name).$CurrentDateTimeStamp.txt" -NoClobber
 
 # Will be installed using PowerShell Core
 Write-Output "Parent Script Directory is $ParentScriptDir"

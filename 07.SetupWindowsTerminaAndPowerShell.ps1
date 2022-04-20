@@ -3,7 +3,8 @@ $CurrentScriptDir = Split-Path $CurrentScriptPath -Parent
 Write-Output "Current Script Directory is $CurrentScriptDir"
 . "$CurrentScriptDir\00.CommonFunctions.ps1"
 
-Start-Transcript -Path "~/Downloads/$($MyInvocation.MyCommand.Name).txt" -NoClobber
+$CurrentDateTimeStamp = Get-Date -Format "ddMMyyyy_hhmmss"
+Start-Transcript -Path "~/Downloads/$($MyInvocation.MyCommand.Name).$CurrentDateTimeStamp.txt" -NoClobber
 
 Set-Location ~/Downloads
 
