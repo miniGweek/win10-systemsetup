@@ -14,22 +14,17 @@ $ChocolateyInstallPath = Get-ExePath -RootSearchDirectory "C:\ProgramData\chocol
     -ExeName "choco.exe" 
 
 Start-Process $ChocolateyInstallPath  -ArgumentList "install git poshgit oh-my-posh -y" -Wait
+$CloudNativeThemePath = Get-ExePath -RootSearchDirectory "C:\Program Files (x86)\oh-my-posh" -ExeName "cloud-native-azure.omp.json" -Recurse
 
 Write-Log -Message "Installing module posh-git"
 Install-Module posh-git -Force
-
-Write-Log -Message "Installing module oh-my-posh"
-Install-Module oh-my-posh -Force
-Import-Module oh-my-posh
-
 
 Write-Log -Message "Installing module PSReadLine"
 Install-Module -Name PSReadLine -Scope CurrentUser -Force -SkipPublisherCheck
 
 Add-EntryToProfile -Content "Import-Module posh-git"
-Add-EntryToProfile -Content "Import-Module oh-my-posh"
 Add-EntryToProfile -Content "Set-PSReadLineOption -PredictionViewStyle ListView"
-Add-EntryToProfile -Content "Set-PoshPrompt -Theme cloud-native-azure.omp"
+Add-EntryToProfile -Content "oh-my-posh init pwsh --config $CloudNativeThemePath | Invoke-Expression"
 
 Write-Log -Message "Done adding entries to the PowerShell Core profile"
 # Launch PowerShell to pre-load the necessary modules

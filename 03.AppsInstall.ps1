@@ -1,10 +1,6 @@
 ﻿# First install the absolute required apps - for dev workstation
 choco install -y `
-    powershell-core `
-    powershell-preview `
-    microsoft-windows-terminal `
     vscode `
-    vscode-insiders `
     notepadplusplus `
     GoogleChrome `
     Firefox `
@@ -16,7 +12,7 @@ choco install -y `
     gitkraken `
     python `
     azure-cli `
-    azurepowershell `
+    az.powershell `
     beyondcompare2 `
     beyondcompare-integration `
     beyondcompare `
@@ -24,7 +20,6 @@ choco install -y `
     IrfanView `
     internet-download-manager `
     bitwarden `
-    bitwarden-cli `
     dotnetfx `
     Everything `
     WinMerge `
@@ -49,20 +44,16 @@ choco install -y `
     coretemp `
     discord `
     f.lux `
-    nordvpn `
-    qbittorrent `
     signal `
     steam `
     sysinternals `
     vlc `
-    vmwareworkstation `
+
+choco install -y `
     AzureStorageExplorer `
     winrar `
     Audacity `
-    CrystalDiskInfo `
-    CrystalDiskMark `
     HWiNFO `
-    IronPython `
     LatencyMon `
     NetBalancer `
     Notion `
