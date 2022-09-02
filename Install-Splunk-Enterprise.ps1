@@ -1,0 +1,1 @@
+Invoke-WebRequest -Uri "https://download.splunk.com/products/splunk/releases/8.2.6/windows/splunk-8.2.6-a6fe1ee8894b-x64-release.msi" -OutFile "splunk-8.2.6-a6fe1ee8894b-x64-release.msi"
