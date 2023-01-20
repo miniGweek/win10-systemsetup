@@ -5,7 +5,7 @@ Start-Transcript -Path "~/Downloads/$($MyInvocation.MyCommand.Name).$CurrentDate
 
 # Will be installed using PowerShell Core
 Write-Output "Parent Script Directory is $ParentScriptDir"
-. "$ParentScriptDir\00.CommonFunctions.ps1"
+. "$ParentScriptDir\common\CommonFunctions.ps1"
 
 Set-Location ~/Downloads
 
