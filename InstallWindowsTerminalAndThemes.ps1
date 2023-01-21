@@ -26,7 +26,7 @@ Function Install-WindowsTerminalAndTools {
         & "$ExtractFolderPath\$SourceFolderPath\07.SetupWindowsTerminaAndPowerShell.ps1"
     }
     catch {
-        Get-Error
+        $_
     }
     finally {
         $ErrorActionPreference = $CurrentErrorActionPreference

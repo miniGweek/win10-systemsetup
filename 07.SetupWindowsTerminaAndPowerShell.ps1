@@ -46,7 +46,7 @@ try {
     Stop-Transcript 
 }
 catch {
-    Get-Error
+    $_
 }
 finally {
     $ErrorActionPreference = $CurrentErrorActionPreference  
